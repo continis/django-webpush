@@ -1,4 +1,4 @@
-﻿
+
 Django-Webpush
 ==============
 [![Say Thanks!](https://img.shields.io/badge/Say%20Thanks-!-1EAEDB.svg)](https://saythanks.io/to/safwanrahman)
@@ -8,7 +8,6 @@ Django-Webpush is a Package made for integrating and sending [Web Push Notificat
 Currently, it Supports Sending Push Notification to **Firefox 46+, Chrome 52+ and Apple devices on iOS 16.4+**.
 
 ----------
-
 
 Installation and Setup
 ----------------------
@@ -27,13 +26,15 @@ INSTALLED_APPS = (
 ```
 
 If you would like to send notification to Google Chrome Users, you need to add a ``WEBPUSH_SETTINGS`` entry with the **Vapid Credentials** Like following:
+
 ```python
 WEBPUSH_SETTINGS = {
     "VAPID_PUBLIC_KEY": "Vapid Public Key",
-    "VAPID_PRIVATE_KEY":"Vapid Private Key",
+    "VAPID_PRIVATE_KEY": "Vapid Private Key",
     "VAPID_ADMIN_EMAIL": "admin@example.com"
 }
 ```
+
 **Replace ``"Vapid Public Key"`` and ``"Vapid Private Key"`` with your Vapid Keys. Also replace ``admin@example.com`` with your email so that the push server of browser can reach to you if anything goes wrong.**
 
 **Generate a Vapid key pair**
@@ -45,11 +46,20 @@ python manage.py webpush_generate_vapid_keypair
 Then include `webpush` in the `urls.py`
 
 ```python
+# Django >= 2.0
+from django.urls import path, include
+
+urlpatterns =  [
+    path('webpush/', include('webpush.urls'))
+]
+
+# Django < 2.0
+from django.conf.urls import url, include
+
 urlpatterns =  [
     url(r'^webpush/', include('webpush.urls'))
 ]
-  ```
-
+```
 
 `django-webpush` is shipped with built in **`jinja`** support.
 If you would like to use with jinja backend,
@@ -71,15 +81,13 @@ TEMPLATES = [
 ]
 ```
 
-
 **Then run Migration by ***`python manage.py migrate`*****
-
-
 
 Adding Web Push Information in Template
 ---------------------------------------
 
 So in template, you need to load `webpush_notifications` custom template tag by following:
+
 - If you are using built in templating engine, add `{% load webpush_notifications %}` in the template
 - If you are using **jinja** templating engine, you do not need to load anything.
 
@@ -89,17 +97,21 @@ Next, inside the `<head></head>` tag add `webpush_header` according to your temp
 <head>
   # For django templating engine
   {% webpush_header %}
+
   # For jinja templating engine
   {{ webpush_header() }}
 </head>
 ```
+
 Next, inside the `<body></body>` tag, insert `webush_button` where you would like to see the **Subscribe to Push Messaging** Button. Like following
 
 ```html
 <body>
   <p> Hello World! </p>
+
   # For django templating engine
   {% webpush_button %}
+
   # For jinja templating engine
   {{ webpush_button() }}
 </body>
@@ -110,8 +122,10 @@ Or if you want to add custom classes (e.g. bootstrap)
 ```html
 <body>
   <p> Hello World! </p>
+
   # For django templating engine
   {% webpush_button with_class="btn btn-outline-info" %}
+
   # For jinja templating engine
   {{ webpush_button(with_class="btn btn-outline-info") }}
 </body>
@@ -126,6 +140,7 @@ Or if you want to add custom classes (e.g. bootstrap)
 
 return render(request, 'template.html',  {"webpush":webpush})
 ```
+
 > **Note:** If you dont pass `group` through the `webpush` context, only logged in users can see the button for subscription and able to get notification.
 
 ----------
@@ -137,7 +152,6 @@ A Web Push generally have a header and body. According to the W3C Specification,
 So in order to send notification, see below.
 
 - If you would like to send notification to a specific group, do like following:
-
 
     ```python
     from webpush import send_group_notification
@@ -152,6 +166,7 @@ So in order to send notification, see below.
     ```
 
 - If you would like to send Notification to a specific user, do like following
+
     ```python
     from webpush import send_user_notification
 
@@ -178,14 +193,14 @@ So in order to send notification, see below.
 
     send_group_notification(group_name="my_group", payload=payload, ttl=1000)
     ```
+
 **And the subscribers will get a notification like:**
 
 ![Web Push Notification icon](http://i.imgur.com/Vr1RMvF.png)
 
 **That will open https://www.example.com if clicked.**
- 
-- If you want fine grained control over sending a single push message, do like following
 
+- If you want fine grained control over sending a single push message, do like following
 
     ```python
     from webpush.utils import send_to_subscription
@@ -198,11 +213,7 @@ So in order to send notification, see below.
         send_to_subscription(push_info.subscription, payload)
 
     ```
-    
 
-
- 
- 
  **And the subscribers will get a notification like**
  ![Web Push Notification](http://i.imgur.com/VA6cxRc.png)
 
@@ -218,20 +229,20 @@ The package is shipped with built in internationalization support.
 
 If you would like to add more language or update translation, you can run the following command:
 
-```bash
+    ```bash
 
-# Add js translation
-django-admin makemessages -d djangojs -l <language_code>
+    # Add js translation
+    django-admin makemessages -d djangojs -l <language_code>
 
-# Add python translation
-django-admin makemessages -l <language_code>
-```
+    # Add python translation
+    django-admin makemessages -l <language_code>
+    ```
 
 After that, you can run `django-admin compilemessages` to compile the messages.
 
 License
 =======
-----
+
 Copyright © 2018 Safwan Rahman
 
 This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
